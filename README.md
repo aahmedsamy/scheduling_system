@@ -38,5 +38,5 @@ docker-compose run web python manage.py migrate
 # TESTING
 ### 1- Navigate to [localhost:8000/admin/](http://localhost:8000/admin/) and login
 ### 2- Navigate to [localhost:8000/graphql/](http://localhost:8000/graphql/) for playground
-#### NOTE: the playground queries is documented (see docs in the top right corner)
+#### NOTE: the playground queries is documented (see docs in the top right corner of the [playground](http://localhost:8000/graphql/))
  

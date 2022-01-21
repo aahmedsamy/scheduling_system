@@ -2,6 +2,22 @@
 
 ## Running the app locally
 
+**Note:** If you're building the docker image for the first time, copy requirements-{ENV}.txt from packaging/requirements/ to the project's root.
+
+### Copy requirements file
+
+```sh
+cp packaging/requirements/requirements.dev.txt requirements.txt
+```
+
+### Copy environment file
+
+```shell script
+cp packaging/environment/env.dev.example .env
+```
+
+### **NOTE: Make sure Docker is installed and running.**
+### Build docker-compose
 ```shell script
 docker-compose up --build
 ```

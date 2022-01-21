@@ -39,3 +39,11 @@ docker exec -it scheduling_system_web_1 sh -c "python manage.py createsuperuser"
 ### 1- Navigate to [localhost:8000/admin/](http://localhost:8000/admin/) and login
 ### 2- Navigate to [localhost:8000/graphql/](http://localhost:8000/graphql/) for playground
 #### NOTE: the playground queries is documented (see docs in the top right corner)
+
+----
+# TODO
+- [ ] fix queries depth
+- [ ] check using django forms for validation
+- [ ] apply jwt authentications
+- [ ] Apply Permissions mixin
+ 

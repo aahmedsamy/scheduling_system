@@ -13,7 +13,7 @@ cp packaging/requirements/requirements.dev.txt app/requirements.txt
 ### Copy environment file
 
 ```shell script
-cp packaging/environment/env.dev.example .env
+cp packaging/environment/.env.dev.example .env.dev
 ```
 
 ### **NOTE: Make sure Docker is installed and running.**

@@ -57,9 +57,9 @@ class SlotUpdateMutation(SlotMutationBase):
             slot = Slot.objects.get(id=slot_id, user_id=info.context.user.id)
         except Slot.DoesNotExist:
             raise Slot.DoesNotExist(f"Slot with id({slot_id}) Does not exist in our database")
-        slot.scheduled_at = kwargs.get('scheduled_at') if kwargs.get('scheduled_at') else slot.scheduled_at
 
-        slot.duration = kwargs.get('duration') if kwargs.get('duration') else slot.attendance_email_address
+        slot.scheduled_at = kwargs.get('scheduled_at', slot.scheduled_at)
+        slot.duration = kwargs.get('duration', slot.duration)
 
         slot.clean()
         slot.save()

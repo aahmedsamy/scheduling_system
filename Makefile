@@ -1,34 +1,25 @@
-RUN = docker-compose exec -it scheduling_system_web_1
+RUN = docker-compose exec -it web
 
-makemigrations:
+makemigrations: # for make migrations files
 	$(RUN) python manage.py makemigrations
 
-open_container_bash:
-	$(RUN) bash
+create-super-user: # for creating new user with system wide privilege
+	$(RUN) python manage.py createsuperuser
 
-migrate:
+open_container_shell:
+	$(RUN) sh
+
+migrate-database:
 	$(RUN) python manage.py migrate
 
-trans-compile:
-	$(RUN) django-admin compilemessages
-
-local-start:
+system-start: # for building the system and run in
 	docker-compose up --build
 
-docker-build:
+system-build: # for building the system
 	docker-compose build
 
-local-stop:
-	docker-compose down
+system-stop:
+	$(RUN) down
 
-local-clean:
-	docker-compose down -v
-
-clear-git-cache:
-	# remove all files from git cache
-	git rm -r --cached .
-	git add .
-	git commit -m ".gitignore is now working"
-
-freeze-requirements:
-	$(RUN) pip freeze > ../requirements.txt
+system-clean:
+	$(RUN) down -v

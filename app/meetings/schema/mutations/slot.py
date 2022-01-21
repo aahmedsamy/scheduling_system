@@ -2,6 +2,7 @@ import graphene
 from django.forms import ModelForm
 from graphene_django.forms.mutation import DjangoModelFormMutation, _set_errors_flag_to_context
 from graphene_django.types import ErrorType
+from graphql import GraphQLError
 from graphql_relay import from_global_id
 
 from meetings.models import Slot
@@ -27,6 +28,8 @@ class SlotCreateMutation(SlotMutationBase):
 
     @classmethod
     def mutate(cls, root, info, **kwargs):
+        if info.context.user.is_anonymous:
+            raise GraphQLError('You must be logged !')
         slot = Slot(
             user_id=info.context.user.id,
             scheduled_at=kwargs['scheduled_at'],
@@ -47,6 +50,8 @@ class SlotUpdateMutation(SlotMutationBase):
 
     @classmethod
     def mutate(cls, root, info, **kwargs):
+        if info.context.user.is_anonymous:
+            raise GraphQLError('You must be logged !')
         slot_id = from_global_id(kwargs['slot_id'])[-1]
         try:
             slot = Slot.objects.get(id=slot_id, user_id=info.context.user.id)
@@ -56,7 +61,7 @@ class SlotUpdateMutation(SlotMutationBase):
 
         slot.duration = kwargs.get('duration') if kwargs.get('duration') else slot.attendance_email_address
 
-        slot.clean(update=True)
+        slot.clean()
         slot.save()
         # Notice we return an instance of this mutation
         return SlotUpdateMutation(slot=slot)
@@ -69,6 +74,8 @@ class SlotDeleteMutation(SlotMutationBase):
 
     @classmethod
     def mutate(cls, root, info, **kwargs):
+        if info.context.user.is_anonymous:
+            raise GraphQLError('You must be logged !')
         slot_id = from_global_id(kwargs['slot_id'])[-1]
         try:
             slot = Slot.objects.get(id=slot_id, user_id=info.context.user.id)

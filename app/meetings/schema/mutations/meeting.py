@@ -1,4 +1,5 @@
 import graphene
+from graphql import GraphQLError
 from graphql_relay import from_global_id
 
 from meetings.models import Meeting, Slot
@@ -29,6 +30,7 @@ class MeetingCreateMutation(graphene.Mutation):
             attendance_email_address=attendance_email_address,
             name=name
         )
+        meeting.save()
         # Notice we return an instance of this mutation
         return MeetingCreateMutation(meeting=meeting)
 
@@ -36,34 +38,27 @@ class MeetingCreateMutation(graphene.Mutation):
 class MeetingUpdateMutation(graphene.Mutation):
     class Arguments:
         # The input arguments for this mutation
-        meeting_id = graphene.String()
-        attendance_email_address = graphene.String()
-        attendance_full_name = graphene.String()
-        slot_id = graphene.String()
-        name = graphene.String()
+        meeting_id = graphene.String(required=True)
+        slot_id = graphene.String(required=True)
 
     # The class attributes define the response of the mutation
     meeting = graphene.Field(MeetingNode)
 
     @classmethod
-    def mutate(cls, root, info, meeting_id, **kwargs):
+    def mutate(cls, root, info, meeting_id, slot_id):
+        if info.context.user.is_anonymous:
+            raise GraphQLError('You must be logged !')
+        meeting_id = from_global_id(meeting_id)[-1]
+        slot_id = from_global_id(slot_id)[-1]
         try:
-            meeting = Meeting.objects.get(id=from_global_id(meeting_id)[-1], slot__user_id=info.context.user.id)
+            meeting = Meeting.objects.get(id=meeting_id, slot__user_id=info.context.user.id)
         except Meeting.DoesNotExist:
             raise Meeting.DoesNotExist(f"Meeting with id({meeting_id}) Does not exist in our database")
-        if kwargs.get('slot'):
-            try:
-                Slot.objects.get(id=from_global_id(kwargs.get('slot'))[-1])
-            except Slot.DoesNotExist:
-                raise Slot.DoesNotExist("Selected Slot is not available please select another Slot")
-        meeting.name = kwargs.get('name') if kwargs.get('name') else meeting.name
-        meeting.slot_id = from_global_id(kwargs.get('slot_id'))[-1] if kwargs.get('slot_id') else meeting.slot_id
-
-        meeting.attendance_email_address = kwargs.get('attendance_email_address') if kwargs.get(
-            'attendance_email_address') else meeting.attendance_email_address
-
-        meeting.attendance_full_name = kwargs.get('attendance_full_name') if kwargs.get(
-            'attendance_full_name') else meeting.attendance_full_name
+        try:
+            Slot.objects.get(id=slot_id)
+        except Slot.DoesNotExist:
+            raise Slot.DoesNotExist("Selected Slot is not available please select another Slot")
+        meeting.slot_id = slot_id
         meeting.save()
         # Notice we return an instance of this mutation
         return MeetingUpdateMutation(meeting=meeting)
@@ -79,6 +74,8 @@ class MeetingDeleteMutation(graphene.Mutation):
 
     @classmethod
     def mutate(cls, root, info, meeting_id, **kwargs):
+        if info.context.user.is_anonymous:
+            raise GraphQLError('You must be logged !')
         try:
             meeting = Meeting.objects.get(id=from_global_id(meeting_id)[-1], slot__user_id=info.context.user.id)
         except Meeting.DoesNotExist:

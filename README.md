@@ -7,7 +7,7 @@
 ### Copy requirements file
 
 ```sh
-cp packaging/requirements/requirements.dev.txt app/requirements.txt
+cp packaging/requirements/requirements.dev.txt requirements.txt
 ```
 
 ### Copy environment file

@@ -2,8 +2,9 @@ version: '3.8'
 
 services:
   web:
-    build: ./app
-    container_name: scheduleing_system
+    build:
+      context: .
+      dockerfile: packaging/docker/scheduling_system/Dockerfile
     command: python manage.py runserver 0.0.0.0:8000
     volumes:
       - ./app/:/usr/src/app/

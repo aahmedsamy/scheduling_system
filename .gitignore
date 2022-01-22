@@ -136,4 +136,4 @@ GitHub.sublime-settings
 !.vscode/extensions.json
 .history
 /.env.dev
-app/requirements.txt
+requirements.txt
